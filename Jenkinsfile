@@ -4,7 +4,7 @@ pipeline {
     environment {
         APP_NAME = 'electricity-bill-app'
         APP_TAG = 'latest'
-        DOCKER_BIN = 'C:\\Users\\rupes\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
+        DOCKER_BIN = 'C:\\Users\\rayas\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
     }
 
     stages {
