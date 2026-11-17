@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electricity Bill Calculator | DevOps Automated</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-content">
+        <div class="brand">
+          <div class="logo-icon">⚡</div>
+          <div>
+            <h1>PowerGrid Utility</h1>
+            <p class="subtitle">Electricity Bill Calculator & Automated DevOps Pipeline</p>
+          </div>
+        </div>
+        <div class="devops-badges">
+          <span class="badge badge-node">Node.js 24</span>
+          <span class="badge badge-docker">Docker</span>
+          <span class="badge badge-jenkins">Jenkins CI/CD</span>
+          <span class="badge badge-status" id="system-status">● Service Online</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-grid">
+      <!-- Input Panel -->
+      <section class="card input-card">
+        <div class="card-header">
+          <h2>Bill Calculation Details</h2>
+          <span class="badge-pill">Step 1</span>
+        </div>
+
+        <form id="billForm">
+          <div class="form-group">
+            <label for="customerName">Consumer Name</label>
+            <input type="text" id="customerName" placeholder="e.g. Gunjan Nashine" value="Gunjan Nashine" required>
+          </div>
+
+          <div class="form-group">
+            <label for="meterNumber">Meter / Consumer No.</label>
+            <input type="text" id="meterNumber" placeholder="e.g. EB-2026-9812" value="EB-2026-9812" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col">
+              <label for="connectionType">Connection Type</label>
+              <select id="connectionType">
+                <option value="domestic" selected>Domestic (Residential)</option>
+                <option value="commercial">Commercial (Business)</option>
+              </select>
+            </div>
+
+            <div class="form-group col">
+              <label for="unitsConsumed">Units Consumed (kWh)</label>
+              <input type="number" id="unitsConsumed" min="0" step="1" placeholder="e.g. 250" value="250" required>
+            </div>
+          </div>
+
+          <div class="quick-presets">
+            <span class="presets-label">Quick Presets:</span>
+            <button type="button" class="btn-preset" data-units="80">80 units (Tier 1)</button>
+            <button type="button" class="btn-preset" data-units="150">150 units (Tier 2)</button>
+            <button type="button" class="btn-preset" data-units="250">250 units (Tier 3)</button>
+            <button type="button" class="btn-preset" data-units="450">450 units (Tier 4)</button>
+          </div>
+
+          <div class="button-row">
+            <button type="submit" class="btn btn-primary" id="calculateBtn">
+              <span>Calculate Bill</span> ⚡
+            </button>
+            <button type="button" class="btn btn-secondary" id="resetBtn">Reset</button>
+          </div>
+        </form>
+
+        <!-- Slab Rates Info Reference -->
+        <div class="tariff-box">
+          <div class="tariff-title">📋 Tariff Slab Reference (<span id="activeTariffLabel">Domestic</span>)</div>
+          <table class="tariff-table" id="tariffTable">
+            <thead>
+              <tr>
+                <th>Consumption Slab</th>
+                <th>Rate per Unit</th>
+              </tr>
+            </thead>
+            <tbody id="tariffTableBody">
+              <tr><td>0 – 100 units</td><td>₹1.50 / kWh</td></tr>
+              <tr><td>101 – 200 units</td><td>₹2.50 / kWh</td></tr>
+              <tr><td>201 – 300 units</td><td>₹4.00 / kWh</td></tr>
+              <tr><td>Above 300 units</td><td>₹6.00 / kWh</td></tr>
+            </tbody>
+          </table>
+          <p class="fixed-charge-note" id="fixedChargeNote">Fixed Meter Rent: ₹50.00 | Electricity Duty: 5%</p>
+        </div>
+      </section>
+
+      <!-- Output / Invoice Panel -->
+      <section class="card invoice-card" id="invoiceCard">
+        <div class="card-header invoice-header-bar">
+          <h2>Official Electricity Invoice</h2>
+          <button type="button" class="btn-print" id="printBtn" title="Print or Save PDF">🖨️ Print Invoice</button>
+        </div>
+
+        <div class="invoice-body" id="invoiceContent">
+          <!-- Live Calculated Summary Hero -->
+          <div class="total-payable-hero">
+            <div class="hero-label">Total Payable Amount</div>
+            <div class="hero-amount" id="displayTotal">₹680.00</div>
+            <div class="hero-due">Due Date: <span id="displayDueDate">--</span></div>
+          </div>
+
+          <!-- Metadata -->
+          <div class="meta-grid">
+            <div class="meta-item">
+              <span class="meta-label">Consumer Name</span>
+              <span class="meta-value" id="displayCustomer">Gunjan Nashine</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Meter Number</span>
+              <span class="meta-value font-mono" id="displayMeter">EB-2026-9812</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Tariff Category</span>
+              <span class="meta-value" id="displayCategory">Domestic</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Billing Date</span>
+              <span class="meta-value" id="displayDate">--</span>
+            </div>
+          </div>
+
+          <!-- Itemized Breakdown Table -->
+          <div class="table-container">
+            <table class="bill-breakdown-table">
+              <thead>
+                <tr>
+                  <th>Billing Tier / Slab</th>
+                  <th class="text-right">Units</th>
+                  <th class="text-right">Rate</th>
+                  <th class="text-right">Amount (₹)</th>
+                </tr>
+              </thead>
+              <tbody id="breakdownTableBody">
+                <!-- Rows populated by app.js -->
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3">Energy Charges Subtotal</td>
+                  <td class="text-right font-mono" id="displayEnergyCharges">₹600.00</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Fixed Meter Maintenance Charge</td>
+                  <td class="text-right font-mono" id="displayFixedCharge">₹50.00</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Electricity Duty & Tax (<span id="displayTaxRate">5%</span>)</td>
+                  <td class="text-right font-mono" id="displayTaxAmount">₹30.00</td>
+                </tr>
+                <tr class="grand-total-row">
+                  <td colspan="3"><strong>NET BILL PAYABLE</strong></td>
+                  <td class="text-right font-mono grand-total" id="displayGrandTotal">₹680.00</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <div class="notice-box">
+            <p><strong>Note:</strong> Please pay your bill on or before the due date to avoid disconnection and a late fee surcharge of 1.5%.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>Electricity Bill Automation Pipeline &bull; Jenkins Declarative CI/CD &bull; Docker Containerized &bull; Git Version Control</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

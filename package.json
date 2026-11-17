@@ -1,0 +1,23 @@
+{
+  "name": "electricity-bill-devops",
+  "version": "1.0.0",
+  "description": "Electricity Bill Calculation Application automated with Git, Docker, and Jenkins CI/CD",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test tests/*.test.js",
+    "cli": "node billCalculator.js"
+  },
+  "keywords": [
+    "devops",
+    "jenkins",
+    "docker",
+    "electricity-bill",
+    "nodejs"
+  ],
+  "author": "Gunjan Nashine",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
